@@ -30,9 +30,7 @@ Introducing the Formula
 
 The logical formula that governs our proposed framework:
 
-EE
-U\left(E, Dy, Sy, IO(E), IO(Dy), IO(Sy), AI\right), \left(NI, ST\right), \left(EC, UD\right)
-EE
+![Logical Formula](/LaTeX/Images/logical-formula-1.png)
 
 **Understanding the Formula**
 
