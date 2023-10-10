@@ -1,0 +1,58 @@
+name: LaTeX to Image
+
+on:
+  push:
+    paths:
+      - 'LaTeX/PDFs/*.tex'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Cache TeX Live
+      uses: actions/cache@v2
+      with:
+        path: /usr/local/texlive
+        key: ${{ runner.os }}-texlive-${{ hashFiles('**/*.tex') }}
+
+    - name: Install TeX Live
+      run: |
+        if [ ! -d "/usr/local/texlive" ]; then
+          sudo apt-get install texlive
+        fi
+
+    - name: Get list of changed files
+      id: getfile
+      run: |
+        echo "Changed files:"
+        changed_files=$(git diff --name-only HEAD~1 HEAD)
+        echo "$changed_files"
+        echo "CHANGED_FILES=$changed_files" >> $GITHUB_ENV
+
+    - name: Compile LaTeX to PDF and Convert to PNG
+      run: |
+        new_files=false
+        for texfile in $CHANGED_FILES; do
+          if [[ "$texfile" == LaTeX/PDFs/*.tex ]]; then
+            pdffile=$(basename -s .tex "$texfile").pdf
+            pngfile=$(basename -s .tex "$texfile").png
+            pdflatex -output-directory=LaTeX/PDFs "$texfile"
+            convert -density 300 LaTeX/PDFs/"$pdffile" -quality 90 LaTeX/Images/"$pngfile"
+            new_files=true
+          fi
+        done
+        echo "NEW_FILES=$new_files" >> $GITHUB_ENV
+
+    - name: Commit and Push
+      if: env.NEW_FILES == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add LaTeX/Images/*.png
+        git commit -m "Add generated images"
+        git push
+
