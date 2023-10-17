@@ -30,7 +30,7 @@ Introducing the Formula
 
 The logical formula that governs our proposed framework:
 
-![Logical Formula](/LaTeX/Images/logical-formula-1.png)
+![Logical Formula](/Archive/LaTeX/Images/logical-formula-1.png)
 
 **Understanding the Formula**
 
